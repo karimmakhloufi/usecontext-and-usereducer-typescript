@@ -1,25 +1,43 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useReducer, createContext } from "react";
+import "./App.css";
+import ChangeCount from "./ChangeCount";
+import Container from "./Container";
+import DisplayCount from "./DisplayCount";
+
+const initialState = { count: 0 };
+
+const reducer = (state: { count: number }, action: { type: string }) => {
+  switch (action.type) {
+    case "increment":
+      return { count: state.count + 1 };
+    case "decrement":
+      return { count: state.count - 1 };
+    default:
+      throw new Error();
+  }
+};
+
+export const context = createContext<{
+  state: { count: number };
+  dispatch: React.Dispatch<{ type: string }>;
+}>({
+  state: initialState,
+  dispatch: () => {},
+});
 
 function App() {
+  const [state, dispatch] = useReducer(reducer, initialState);
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <context.Provider value={{ state, dispatch }}>
+      <div className="App">
+        <Container>
+          <>
+            <DisplayCount />
+            <ChangeCount />
+          </>
+        </Container>
+      </div>
+    </context.Provider>
   );
 }
 
